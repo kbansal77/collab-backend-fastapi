@@ -119,3 +119,12 @@ def upload_resume(email:str, file: UploadFile = File(...)):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=400, detail=str(e))
+    
+@user.get('/getResume/{email}')
+def get_user_resume(email:str):
+    try:
+        userData = userEnitry(conn["collab"]["users"].find_one({"email":email}))
+        return FileResponse(path='Resumes/{}.pdf'.format(userData["resume"]))
+    except Exception as e:
+            print(e)
+            raise HTTPException(status_code=400, detail=str(e))
