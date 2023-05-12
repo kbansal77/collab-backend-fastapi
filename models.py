@@ -34,7 +34,7 @@ class Post(BaseModel):
     project_description: Optional[str]
     role_name: Optional[str]
     role_description: Optional[str]
-    post_type: Optional[Literal["Project", "Internship", "Hackathon"]]
+    post_type: Optional[str]
     document_link: Optional[str]
     internship_start_date: Optional[datetime]
     internship_duration: Optional[int]
