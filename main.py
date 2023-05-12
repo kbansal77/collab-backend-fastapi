@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
-# from fastapi.responses import Response
-# from fastapi.exceptions import RequestValidationError, ValidationError
-# from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
+from fastapi.exceptions import RequestValidationError, ValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from routes.user import user
 from routes.post import post
@@ -31,23 +31,23 @@ app = FastAPI(
 origins = ["*"]
 
 app.add_middleware(
-    # CORSMiddleware,
+    CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# @app.exception_handler(RequestValidationError)
-# async def validation_exception_handler(request, exc):
-#     print(exc)
-#     return Response(status_code=422, content=str(exc))
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    print(exc)
+    return Response(status_code=422, content=str(exc))
 
 
-# @app.exception_handler(StarletteHTTPException)
-# async def http_exception_handler(request, exc):
-#     print(exc)
-#     return Response(status_code=exc.status_code, content=exc.detail)
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+    print(exc)
+    return Response(status_code=exc.status_code, content=exc.detail)
 
 
 app.include_router(
