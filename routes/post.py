@@ -62,6 +62,18 @@ def create_post(postData:Post):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=400, detail=str(e))
+    
+@post.put("/{postid}")
+def edit_post(postData: Post, postid: str):
+    try:
+        # print(postEntry(conn["collab"]["posts"].find_one({"_id":ObjectId(postid)})))
+        conn["collab"]["posts"].update_one({"_id":ObjectId(postid)},{
+            "$set": dict(postData)
+        })
+        return postEntry(conn["collab"]["posts"].find_one({"_id":ObjectId(postid)}))
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=400, detail=str(e))
 
 @post.put("/save/{postid}/{userEmail}")
 def save_post(postid:str, userEmail: str):
