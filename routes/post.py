@@ -4,7 +4,7 @@ from models import Post
 from bson.objectid import ObjectId
 from schema.post import postEntry, postsEntry
 from schema.user import userEnitry
-
+import re
 from config.db import conn
 
 import textract
@@ -143,6 +143,7 @@ def get_applicant_details(postid:str):
         job_description = " ".join((job_description, postData["project_description"]))
         job_description = " ".join((job_description, postData["role_name"]))
         job_description= " ".join((job_description,postData["role_description"]))
+        job_description = re.sub(r'[^\w\s]','',job_description)
         # for tech_stack in postData["tech_stack"]:
         # print(job_description)
             
@@ -153,28 +154,25 @@ def get_applicant_details(postid:str):
                 data.append(userData)
             for applicant in data:
                 resume = ""
-                # resume = docx2txt.process('Resumes/{}.pdf'.format(applicant["resume"]))
-                # print(resume)
-                
                 resume = textract.process('Resumes/{}.pdf'.format(applicant["resume"]))
                 str(resume)
-                # print(str(resume))
                 resume = resume.decode("utf-8")
-                # resume = resume.replace("\n"," ") 
+                resume = re.sub(r'[^\w\s]','',resume)
                 
                 stop_words = set(stopwords.words('english'))
-  
+                
                 word_tokens = word_tokenize(resume)
+                # word_tokens = [w for w in word_tokens if not w.lower() in stop_words]
+                
                 jd_tokens = word_tokenize(job_description)
+                # jd_tokens = [w for w in jd_tokens if not w.lower() in stop_words]
 
                 resume = ' '.join(word_tokens)
-                # print(resume)
                 job = ' '.join(jd_tokens)
                 text = [resume,job]
                 cv = CountVectorizer()
                 count_matrix = cv.fit_transform(text)
                 print('Similarity score : ',cosine_similarity(count_matrix))
-                #print similarity score
                 matchpercentage = cosine_similarity(count_matrix)[0][1]
                 matchpercentage = round(matchpercentage*100,2)
                 print('Your Resume {} % match to the job description !'.format(matchpercentage))
